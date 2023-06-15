@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'replay_event_bus.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -123,7 +125,7 @@ class _BottomSheet extends StatelessWidget {
                 icon: const Icon(Icons.send),
                 onPressed: state.isValid
                     ? () {
-                        context.read<EventBloc>().add(EventSendEvent());
+                        context.read<EventBloc>().add(const EventSendEvent());
                         controller.clear();
                       }
                     : null,
@@ -190,52 +192,4 @@ class MyEvent {
   MyEvent(this.message);
 }
 
-class Event<T> {
-  final T data;
 
-  Event(this.data);
-}
-
-class ReplayEventBus {
-  final Map<Type, ReplaySubject<dynamic>> _subjectMap = {};
-
-  ReplayEventBus._internal();
-
-  static final ReplayEventBus _singleton = ReplayEventBus._internal();
-
-  factory ReplayEventBus() => _singleton;
-
-  void fire<T>(T data) {
-    final type = T;
-    var subject = _subjectMap[type];
-
-    if (subject == null) {
-      subject = ReplaySubject<T>();
-      _subjectMap[type] = subject;
-    }
-
-    subject.add(data);
-  }
-
-  Stream<T> on<T>() {
-    final type = T;
-    var subject = _subjectMap[type];
-
-    if (subject == null) {
-      subject = ReplaySubject<T>();
-      _subjectMap[type] = subject;
-    }
-
-    return subject.stream as Stream<T>;
-  }
-
-  void dispose<T>() {
-    final type = T;
-    final subject = _subjectMap[type];
-
-    if (subject != null) {
-      subject.close();
-      _subjectMap.remove(type);
-    }
-  }
-}
