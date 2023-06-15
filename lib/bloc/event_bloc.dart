@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:baby_book/bus.dart';
 import 'package:baby_book/main.dart';
 import 'package:baby_book/models/message.dart';
 import 'package:baby_book/replay_event_bus.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:formz/formz.dart';
 
 part 'event_event.dart';
@@ -24,6 +24,7 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     if(state.isValid){
       list.add(state.message.value);
       ReplayEventBus().fire<MyEvent>(MyEvent(state.message.value));
+      bus.emit("eventName",state.message.value);
     }
     if(state.list.isNotEmpty){
       list.insertAll(0,state.list);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'bus.dart';
 import 'replay_event_bus.dart';
 
 void main() {
@@ -146,18 +147,22 @@ class MyPage2 extends StatefulWidget {
 }
 
 class _MyPage2State extends State<MyPage2> {
-  final bus = ReplayEventBus();
+  final bus1 = ReplayEventBus();
 
   List<String> list = [];
 
   @override
   void initState() {
     super.initState();
-    bus.on<MyEvent>().listen((event) {
-      if(!mounted) return;
+    bus1.on<MyEvent>().listen((event) {
+      print("ReplayEventBus-->${event.message}");
+      if (!mounted) return;
       setState(() {
         list.add(event.message);
       });
+    });
+    bus.on("eventName", (arg) {
+      print("EventBus---->$arg");
     });
   }
 
@@ -165,7 +170,7 @@ class _MyPage2State extends State<MyPage2> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    bus.dispose();
+    bus1.dispose();
   }
 
   @override
@@ -191,5 +196,3 @@ class MyEvent {
 
   MyEvent(this.message);
 }
-
-
